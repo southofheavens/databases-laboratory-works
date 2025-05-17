@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:17
+    container_name: music_instruments_db
+    restart: always
+    environment:
+      POSTGRES_DB: music_store
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+
