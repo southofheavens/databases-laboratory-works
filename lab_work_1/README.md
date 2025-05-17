@@ -330,11 +330,21 @@ Execution Time: 3463.170 ms
 слов:  
 Execution Time: 0.353 ms  
   
-Теперь попробуем поискать в базе данных инструменты, тип которых содержит "another type", но перед этим вставим запись с уникальным типом "another type":
+Теперь попробуем поискать в базе данных инструменты, тип которых содержит "another type", но перед этим вставим запись с уникальным типом "another type":  
 Execution Time: 0.438 ms  
 
 Попробуем применить биграммы:  
 Exectuion Time: 0.209 ms  
 
 
+Теперь применим pg_crypto. Будем считать, что производитель является
+конфиденциальной информацией. Попробуем зашифровать и расшифровать:  
 
+```sql
+ALTER TABLE instruments ADD COLUMN enc_manufacturer BYTEA;
+UPDATE instruments
+SET enc_manufacturer = pgp_sym_encrypt(manufacturer, 'my_secret_key');
+
+SELECT name, pgp_sym_decrypt(enc_manufacturer, 'my_secret_key') AS decrypted_manufacturer
+FROM instruments;
+```

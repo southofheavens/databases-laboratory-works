@@ -48,3 +48,12 @@ ON instruments USING GIN (name gin_trgm_ops);
 CREATE EXTENSION IF NOT EXISTS pg_bigm;
 CREATE INDEX instruments_type_bigm_idx
 ON instruments USING GIN (type gin_bigm_ops);
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+ALTER TABLE instruments ADD COLUMN enc_manufacturer BYTEA;
+UPDATE instruments
+SET enc_manufacturer = pgp_sym_encrypt(manufacturer, 'my_secret_key');
+
+SELECT name, pgp_sym_decrypt(enc_manufacturer, 'my_secret_key') AS decrypted_manufacturer
+FROM instruments;
